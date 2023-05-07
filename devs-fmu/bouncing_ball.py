@@ -130,23 +130,3 @@ class BouncingBall:
             self.update_interval,
             self.update
         )
-
-
-def main():
-    m = BouncingBall()
-    m.initialize()
-
-    assert m.get_height() == 1
-    assert m.get_velocity() == 0
-
-    simulator.stop(timedelta(seconds=5))
-    simulator.run()
-
-    m.cleanup()
-
-    print(m.height_log)
-    print(m.velocity_log)
-
-
-if __name__ == '__main__':
-    main()
