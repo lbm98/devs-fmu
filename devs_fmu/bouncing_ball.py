@@ -23,10 +23,7 @@ class BouncingBall:
         self.height = 1.0
         self.velocity = 0.0
 
-        self.height_log = [(simulator.now.total_seconds(), self.height)]
-        self.velocity_log = [(simulator.now.total_seconds(), self.velocity)]
-
-        self.update_interval = timedelta(milliseconds=10)
+        self.last_update_time = timedelta(0)
 
         # Maybe get these vales from the model description?
         self.value_references = {
@@ -34,6 +31,8 @@ class BouncingBall:
             'v': 3,
             'e': 6
         }
+
+        self.initialize()
 
     def initialize(self):
         # Extract the FMU to a temporary directory
@@ -60,7 +59,7 @@ class BouncingBall:
         )
 
         # Set the start and stop time of the simulation
-        # Setting stopTime to None makes the simulation never-ending
+        # Setting stopTime to None makes the simulation run indefinitely
         self.fmu.setupExperiment(
             startTime=0.0,
             stopTime=None
@@ -69,13 +68,7 @@ class BouncingBall:
         self.fmu.enterInitializationMode()
         self.fmu.exitInitializationMode()
 
-        # Schedule the first update
-        simulator.schedule(
-            self.update_interval,
-            self.update
-        )
-
-    def cleanup(self):
+    def __del__(self):
         self.fmu.freeInstance()
         shutil.rmtree(self.fmu_dir)
 
@@ -97,37 +90,42 @@ class BouncingBall:
             value=[e]
         )
 
-    def _get_internal_height(self):
+    def _get_internal_height(self) -> float:
         return self.fmu.getReal([self.value_references['h']])[0]
 
-    def _get_internal_velocity(self):
+    def _get_internal_velocity(self) -> float:
         return self.fmu.getReal([self.value_references['v']])[0]
 
-    def get_height(self):
+    def update_if_necessary(self) -> (float | None, bool):
+        # Do a sanity check
+        assert self.last_update_time <= simulator.now
+
+        # Check if an update is necessary
+        if self.last_update_time != simulator.now:
+
+            # Here, an update is necessary
+            step_size = simulator.now - self.last_update_time
+
+            self.fmu.doStep(
+                currentCommunicationPoint=simulator.now.total_seconds(),
+                communicationStepSize=step_size.total_seconds(),
+            )
+
+            self.height = self._get_internal_height()
+            self.velocity = self._get_internal_velocity()
+
+            self.last_update_time = simulator.now
+            updated = True
+        else:
+            # Here, an update is NOT necessary
+            updated = False
+
+        return updated
+
+    def get_height(self) -> float:
+        self.update_if_necessary()
         return self.height
 
-    def get_velocity(self):
+    def get_velocity(self) -> float:
+        self.update_if_necessary()
         return self.velocity
-
-    def update(self):
-        time = simulator.now.total_seconds()
-
-        # Internally, many steps could be taken
-        # due to a smaller internal step size
-        self.fmu.doStep(
-            currentCommunicationPoint=time,
-            communicationStepSize=self.update_interval.total_seconds(),
-        )
-
-        # Cache some values
-        self.height = self._get_internal_height()
-        self.velocity = self._get_internal_velocity()
-
-        self.height_log.append((time, self.height))
-        self.velocity_log.append((time, self.velocity))
-
-        # Schedule the next update
-        simulator.schedule(
-            self.update_interval,
-            self.update
-        )

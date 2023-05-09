@@ -29,17 +29,27 @@ class Simulator:
         return self.schedule(timedelta(0), handler, *args)
 
     def run(self):
-        while self.events:
+        while True:
+            if len(self.events) == 0:
+                if self.stop_time is not None:
+                    self.time = self.stop_time
+                return
+
             event = heapq.heappop(self.events)
             self.time = event.time
 
             if self.stop_time is not None and self.time >= self.stop_time:
+                self.time = self.stop_time
                 return
 
             event.handler(*event.args)
 
     def stop(self, stop_time: timedelta):
         self.stop_time = self.time + stop_time
+
+    def advance(self, time: timedelta):
+        self.stop(time)
+        self.run()
 
     def reset(self):
         self.events = []

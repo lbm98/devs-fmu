@@ -2,3 +2,4 @@ fmu
 .ipynb_checkpoints
 .idea
 .venv
+.pytest_cache
