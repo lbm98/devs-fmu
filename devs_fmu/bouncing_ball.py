@@ -11,32 +11,21 @@ from fmpy import (
 from fmpy.fmi2 import FMU2Slave
 
 from .simulator import simulator
-from config import REFERENCE_FMUS_PATH
 
 
 class BouncingBall:
-    def __init__(self):
+    """
+    https://github.com/CATIA-Systems/FMPy/blob/main/fmpy/simulation.py
+    """
+    def __init__(self, fmu_path):
         self.fmu: FMU2Slave | None = None
         self.fmu_dir = None
 
-        # Maybe get these vales from the model description?
-        self.height = 1.0
-        self.velocity = 0.0
-
+        # To support lazy evaluation
         self.last_update_time = timedelta(0)
 
-        # Maybe get these vales from the model description?
-        self.value_references = {
-            'h': 1,
-            'v': 3,
-            'e': 6
-        }
-
-        self.initialize()
-
-    def initialize(self):
         # Extract the FMU to a temporary directory
-        self.fmu_dir = extract(REFERENCE_FMUS_PATH / '2.0/BouncingBall.fmu')
+        self.fmu_dir = extract(fmu_path)
 
         # Check if the platform is supported
         platforms = supported_platforms(self.fmu_dir)
@@ -45,6 +34,20 @@ class BouncingBall:
 
         # Parse the model description
         model_description = read_model_description(self.fmu_dir)
+
+        # Get the value references and start values from the model description
+        self.value_references = {}
+        for variable in model_description.modelVariables:
+            if variable.name in ['h', 'v']:
+                self.value_references[variable.name] = int(variable.valueReference)
+                if variable.name == 'h':
+                    self.height = variable.start
+                elif variable.name == 'v':
+                    self.velocity = variable.start
+
+        # Get the starting vales from the model description
+        self.height = 1.0
+        self.velocity = 0.0
 
         # Check if FMI type is Co-Simulation
         if model_description.coSimulation is None:
@@ -141,12 +144,6 @@ class BouncingBall:
         self.fmu.setReal(
             vr=[self.value_references['v']],
             value=[v]
-        )
-
-    def _set_internal_attenuation_factor(self, e: float):
-        self.fmu.setReal(
-            vr=[self.value_references['e']],
-            value=[e]
         )
 
     def _get_internal_height(self) -> float:

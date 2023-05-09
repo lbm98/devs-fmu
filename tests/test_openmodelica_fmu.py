@@ -1,0 +1,64 @@
+import sys
+from datetime import timedelta
+
+from devs_fmu.simulator import simulator
+from devs_fmu.bouncing_ball import BouncingBall
+
+from config import OPENMODELICA_FMUS_PATH
+
+FMU_PATH = OPENMODELICA_FMUS_PATH / 'BouncingBall.fmu'
+
+
+def test_bouncing_ball():
+    BouncingBall(FMU_PATH)
+
+
+def test_bouncing_ball_init():
+    m = BouncingBall(FMU_PATH)
+
+    assert m.height == 1
+    assert m.velocity == 0
+
+    assert m.value_references == {
+        'h': 0,
+        'v': 1
+    }
+
+
+def test_bouncing_ball_simulated():
+    simulator.reset()
+    m = BouncingBall(FMU_PATH)
+
+    simulator.advance(timedelta(seconds=1))
+
+    # TODO: handle the numeric instability
+    assert m.get_height() < 1
+
+
+def test_bouncing_ball_simulated_with_state_change():
+    m = BouncingBall(FMU_PATH)
+
+    def change_height(m):
+        m.set_height(1)
+
+    simulator.schedule(
+        timedelta(seconds=1),
+        change_height,
+        m
+    )
+
+    assert m.get_height() == 1
+    assert m.get_velocity() == 0
+
+    simulator.advance(timedelta(seconds=0.5))
+
+    assert m.get_height() < 1
+
+    simulator.advance(timedelta(seconds=0.5))
+
+    assert m.get_height() == 1
+
+    simulator.advance(timedelta(seconds=2))
+
+    assert m.get_height() == sys.float_info.min
+    assert m.get_velocity() == 0
