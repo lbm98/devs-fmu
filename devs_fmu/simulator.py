@@ -40,7 +40,7 @@ class Simulator:
 
             # If the stop condition is at x seconds,
             # we choose to still process all events scheduled at x seconds,
-            # therefore the strict inequality
+            # therefore we use the strict inequality
             if self.stop_time is not None and self.time > self.stop_time:
 
                 # Do not discard the event

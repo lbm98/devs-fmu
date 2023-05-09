@@ -28,8 +28,8 @@ RUN conda shell.bash activate env
 RUN conda config --add channels conda-forge
 RUN conda install --file requirements-conda.txt
 
-COPY get_fmu.py .
-RUN python get_fmu.py
+COPY get_fmus.py .
+RUN python get_fmus.py
 
 COPY config.py .
 COPY devs_fmu devs_fmu
