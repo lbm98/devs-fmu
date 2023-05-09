@@ -10,7 +10,8 @@ from fmpy import (
 )
 from fmpy.fmi2 import FMU2Slave
 
-from simulator import simulator
+from .simulator import simulator
+from config import FMU_ROOT
 
 
 class BouncingBall:
@@ -36,7 +37,7 @@ class BouncingBall:
 
     def initialize(self):
         # Extract the FMU to a temporary directory
-        self.fmu_dir = extract('../fmu/2.0/BouncingBall.fmu')
+        self.fmu_dir = extract(FMU_ROOT / '2.0/BouncingBall.fmu')
 
         # Check if the platform is supported
         platforms = supported_platforms(self.fmu_dir)
@@ -80,20 +81,20 @@ class BouncingBall:
 
     def set_height(self, h: float):
         self.fmu.setReal(
-            vr=self.value_references['h'],
-            value=h
+            vr=[self.value_references['h']],
+            value=[h]
         )
 
     def set_velocity(self, v: float):
         self.fmu.setReal(
-            vr=self.value_references['v'],
-            value=v
+            vr=[self.value_references['v']],
+            value=[v]
         )
 
     def set_attenuation_factor(self, e: float):
         self.fmu.setReal(
-            vr=self.value_references['e'],
-            value=e
+            vr=[self.value_references['e']],
+            value=[e]
         )
 
     def _get_internal_height(self):
