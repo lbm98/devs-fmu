@@ -26,7 +26,7 @@ class Simulator:
         heapq.heappush(self.events, event)
 
     def schedule_now(self, handler: Callable, *args: Any):
-        return self.schedule(timedelta(0), handler, *args)
+        return self.schedule(self.time, handler, *args)
 
     def run(self):
         while True:
@@ -38,16 +38,24 @@ class Simulator:
             event = heapq.heappop(self.events)
             self.time = event.time
 
-            if self.stop_time is not None and self.time >= self.stop_time:
+            # If the stop condition is at x seconds,
+            # we choose to still process all events scheduled at x seconds,
+            # therefore the strict inequality
+            if self.stop_time is not None and self.time > self.stop_time:
+
+                # Do not discard the event
+                heapq.heappush(self.events, event)
                 self.time = self.stop_time
                 return
 
             event.handler(*event.args)
 
     def stop(self, stop_time: timedelta):
+        """ Relative soft stop """
         self.stop_time = self.time + stop_time
 
     def advance(self, time: timedelta):
+        """ Relative advance """
         self.stop(time)
         self.run()
 

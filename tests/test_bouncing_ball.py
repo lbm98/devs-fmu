@@ -23,3 +23,32 @@ def test_bouncing_ball_with_simulation():
 
     assert m.get_height() == sys.float_info.min
     assert m.get_velocity() == 0
+
+
+def test_bouncing_ball_with_state_change():
+    m = BouncingBall()
+
+    def change_height(bouncing_ball):
+        bouncing_ball.set_height(1)
+
+    simulator.schedule(
+        timedelta(seconds=1),
+        change_height,
+        m
+    )
+
+    assert m.get_height() == 1
+    assert m.get_velocity() == 0
+
+    simulator.advance(timedelta(seconds=0.5))
+
+    assert m.get_height() < 1
+
+    simulator.advance(timedelta(seconds=0.5))
+
+    assert m.get_height() == 1
+
+    simulator.advance(timedelta(seconds=2))
+
+    assert m.get_height() == sys.float_info.min
+    assert m.get_velocity() == 0

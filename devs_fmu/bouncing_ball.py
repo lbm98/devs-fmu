@@ -72,31 +72,40 @@ class BouncingBall:
         self.fmu.freeInstance()
         shutil.rmtree(self.fmu_dir)
 
+    def get_height(self) -> float:
+        self.update_if_necessary()
+        return self.height
+
+    def get_velocity(self) -> float:
+        self.update_if_necessary()
+        return self.velocity
+
+    ###############################
+    # SET FUNCTIONS
+    ###############################
+    #
+    # Before we change the state of the model,
+    # we need to first make the model up-to-date using the old state
+
     def set_height(self, h: float):
-        self.fmu.setReal(
-            vr=[self.value_references['h']],
-            value=[h]
-        )
+
+        self.update_if_necessary()
+        self._set_internal_height(h)
+        self.height = self._get_internal_height()
+
+        # Do a sanity check
+        assert self.height == h
 
     def set_velocity(self, v: float):
-        self.fmu.setReal(
-            vr=[self.value_references['v']],
-            value=[v]
-        )
 
-    def set_attenuation_factor(self, e: float):
-        self.fmu.setReal(
-            vr=[self.value_references['e']],
-            value=[e]
-        )
+        self.update_if_necessary()
+        self._set_internal_velocity(v)
+        self.velocity = self._get_internal_velocity()
 
-    def _get_internal_height(self) -> float:
-        return self.fmu.getReal([self.value_references['h']])[0]
+        # Do a sanity check
+        assert self.velocity == v
 
-    def _get_internal_velocity(self) -> float:
-        return self.fmu.getReal([self.value_references['v']])[0]
-
-    def update_if_necessary(self) -> (float | None, bool):
+    def update_if_necessary(self) -> bool:
         # Do a sanity check
         assert self.last_update_time <= simulator.now
 
@@ -122,10 +131,26 @@ class BouncingBall:
 
         return updated
 
-    def get_height(self) -> float:
-        self.update_if_necessary()
-        return self.height
+    def _set_internal_height(self, h: float):
+        self.fmu.setReal(
+            vr=[self.value_references['h']],
+            value=[h]
+        )
 
-    def get_velocity(self) -> float:
-        self.update_if_necessary()
-        return self.velocity
+    def _set_internal_velocity(self, v: float):
+        self.fmu.setReal(
+            vr=[self.value_references['v']],
+            value=[v]
+        )
+
+    def _set_internal_attenuation_factor(self, e: float):
+        self.fmu.setReal(
+            vr=[self.value_references['e']],
+            value=[e]
+        )
+
+    def _get_internal_height(self) -> float:
+        return self.fmu.getReal([self.value_references['h']])[0]
+
+    def _get_internal_velocity(self) -> float:
+        return self.fmu.getReal([self.value_references['v']])[0]
