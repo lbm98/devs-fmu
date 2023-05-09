@@ -11,7 +11,7 @@ from fmpy import (
 from fmpy.fmi2 import FMU2Slave
 
 from .simulator import simulator
-from config import FMU_ROOT
+from config import REFERENCE_FMUS_PATH
 
 
 class BouncingBall:
@@ -36,7 +36,7 @@ class BouncingBall:
 
     def initialize(self):
         # Extract the FMU to a temporary directory
-        self.fmu_dir = extract(FMU_ROOT / '2.0/BouncingBall.fmu')
+        self.fmu_dir = extract(REFERENCE_FMUS_PATH / '2.0/BouncingBall.fmu')
 
         # Check if the platform is supported
         platforms = supported_platforms(self.fmu_dir)

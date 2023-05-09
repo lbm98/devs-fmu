@@ -1,10 +1,9 @@
 import os
-import shutil
+import subprocess
 from fmpy import extract
 from fmpy.util import download_file
 
-REFERENCE_FMUS_DIR = 'Reference-FMUs'
-OPENMODELICA_FMUS_DIR = 'OpenModelica-FMUs'
+from config import REFERENCE_FMUS_DIR
 
 
 def get_reference_fmus():
@@ -19,13 +18,10 @@ def get_reference_fmus():
 
 
 def get_openmodelica_fmus():
-    shutil.copyfile(
-        src='/usr/share/doc/omc/testmodels/BouncingBall.mo',
-        dst='OPENMODELICA_FMUS_DIR'
-    )
+    # Maybe make the .OpenModelica-Scripts file a template to avoid hard-coding the directory name?
+    subprocess.run(['omc', 'OpenModelica-Scripts/bouncingBall.mos'])
 
 
 if __name__ == '__main__':
     get_reference_fmus()
     get_openmodelica_fmus()
-
