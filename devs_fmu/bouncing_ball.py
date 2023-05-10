@@ -72,6 +72,7 @@ class BouncingBall:
         self.fmu.exitInitializationMode()
 
     def __del__(self):
+        self.fmu.terminate()
         self.fmu.freeInstance()
         shutil.rmtree(self.fmu_dir)
 

@@ -4,13 +4,28 @@ FROM ubuntu:20.04
 # docker run -t devs-fmu
 # docker run --rm -it --entrypoint bash devs-fmu
 
+ENV OPENMODELICA_VERSION=1.21.0
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y \
+    apt-get install -qy \
         build-essential \
         wget \
-        git
+        gnupg \
+        ca-certificates \
+        git && \
+    apt-get clean
+
+# https://github.com/OpenModelica/OpenModelicaDockerImages/blob/v1.21.0/Dockerfile
+
+RUN echo "deb https://build.openmodelica.org/omc/builds/linux/releases/$OPENMODELICA_VERSION/ `cat /etc/lsb-release | grep CODENAME | cut -d= -f2` release" > /etc/apt/sources.list.d/openmodelica.list && \
+    wget https://build.openmodelica.org/apt/openmodelica.asc -O- | apt-key add -
+
+RUN apt-get update && \
+    apt-get install -qy --no-install-recommends \
+        omc && \
+    apt-get clean
 
 RUN useradd --create-home --shell /bin/bash dev
 USER dev
@@ -28,10 +43,10 @@ RUN conda shell.bash activate env
 RUN conda config --add channels conda-forge
 RUN conda install --file requirements-conda.txt
 
-COPY get_fmus.py .
-RUN python get_fmus.py
+RUN mkdir project
+WORKDIR project
 
-COPY config.py .
-COPY devs_fmu devs_fmu
-COPY tests tests
+COPY --chown=dev . .
+
+RUN python get_fmus.py
 RUN pytest

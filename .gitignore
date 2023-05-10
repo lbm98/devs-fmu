@@ -1,7 +1,5 @@
-Reference-FMUs
-OpenModelica-FMUs
 .ipynb_checkpoints
 .idea
-.venv
+venv
 .pytest_cache
 __pycache__

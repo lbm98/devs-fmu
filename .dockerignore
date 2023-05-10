@@ -1,0 +1,13 @@
+.idea
+.git
+venv
+**/.pytest_cache
+**/__pycache__
+
+**/.ipynb_checkpoints
+
+OpenModelica/build
+OpenModelica/FMUs/*
+OpenModelica/models/*
+
+Reference-FMUs/*

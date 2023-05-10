@@ -1,0 +1,20 @@
+loadFile("../models/BouncingBall.mo");
+
+mkdir(
+    newDirectory="../build"
+);
+
+cd(
+    newWorkingDirectory="../build"
+);
+
+generatedFileName := translateModelFMU(
+      className=BouncingBall,
+      version="2.0",
+      fmuType="cs"
+);
+
+copy(
+    source=generatedFileName,
+    destination="../FMUs/BouncingBall.fmu"
+);

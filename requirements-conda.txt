@@ -1,2 +1,4 @@
 fmpy-base
 pytest
+jupyter_core
+requests
