@@ -1,0 +1,7 @@
+name: devs-fmu-c-api
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - fmpy-base
+prefix: /home/lbm/miniconda3/envs/devs-fmu-c-api

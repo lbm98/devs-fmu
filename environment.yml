@@ -1,0 +1,12 @@
+name: devs-fmu
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - jupyterlab
+  - numpy
+  - pytest
+  - matplotlib
+  - fmpy
+prefix: /home/lbm/miniconda3/envs/devs-fmu

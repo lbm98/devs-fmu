@@ -1,5 +1,7 @@
-.ipynb_checkpoints
 .idea
-venv
+
+.ipynb_checkpoints
 .pytest_cache
 __pycache__
+
+cmake-build-*

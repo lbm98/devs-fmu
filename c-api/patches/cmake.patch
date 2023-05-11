@@ -1,7 +1,22 @@
 diff --git a/fmusim/CMakeLists.txt b/fmusim/CMakeLists.txt
-index 05d212d..3121366 100644
+index 05d212d..d90ad74 100644
 --- a/fmusim/CMakeLists.txt
 +++ b/fmusim/CMakeLists.txt
+@@ -2,10 +2,10 @@ cmake_minimum_required (VERSION 3.17)
+ 
+ set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)
+ 
+-set(LIBXML2_DIR  ${CMAKE_SOURCE_DIR}/ThirdParty/libxml2-2.10.3/build/install/)
+-set(ZLIB_DIR     ${CMAKE_SOURCE_DIR}/ThirdParty/zlib-1.2.13/build/install/)
+-set(ZLIB_SRC_DIR ${CMAKE_SOURCE_DIR}/ThirdParty/zlib-1.2.13/)
+-set(CVODE_DIR    ${CMAKE_SOURCE_DIR}/ThirdParty/cvode-6.4.1/build/install/)
++set(LIBXML2_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/libxml2-2.10.3/build/install/)
++set(ZLIB_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/zlib-1.2.13/build/install/)
++set(ZLIB_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/zlib-1.2.13/)
++set(CVODE_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty/cvode-6.4.1/build/install/)
+ 
+ if (WIN32)
+     set(FMUSIM_DIST_DIR ${CMAKE_BINARY_DIR}/dist/fmusim-windows/)
 @@ -46,8 +46,6 @@ set(sources
    fmi1schema.h
    fmi2schema.h
