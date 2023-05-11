@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.19)
 project(c-api)
 
-#set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+#set(CMAKE_C_STANDARD 11)
 
 set(WITH_FMUSIM ON CACHE BOOL "" FORCE)
 
 add_subdirectory(Reference-FMUs)
 
 set(SOURCES
-        main.c
+        main.cpp
 )
 
 add_executable(run-c-api ${SOURCES})

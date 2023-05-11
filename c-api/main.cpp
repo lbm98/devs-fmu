@@ -1,5 +1,6 @@
-#include "FMIZip.h"
-
+extern "C" {
+    #include "FMIZip.h"
+}
 
 int main() {
     const char *unzipdir = FMICreateTemporaryDirectory();
