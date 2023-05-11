@@ -1,6 +1,0 @@
-numpy==1.24.3
-matplotlib==3.7.1
-FMPy==0.3.15
-jupyterlab==3.6.3
-pytest==7.3.1
-requests==2.30.0

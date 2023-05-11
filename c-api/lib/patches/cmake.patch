@@ -1,0 +1,36 @@
+diff --git a/fmusim/CMakeLists.txt b/fmusim/CMakeLists.txt
+index 05d212d..3121366 100644
+--- a/fmusim/CMakeLists.txt
++++ b/fmusim/CMakeLists.txt
+@@ -46,8 +46,6 @@ set(sources
+   fmi1schema.h
+   fmi2schema.h
+   fmi3schema.h
+-  fmusim.h
+-  fmusim.c
+   fmusim_fmi1_cs.h
+   fmusim_fmi1_cs.c
+   fmusim_fmi1_me.h
+@@ -71,9 +69,9 @@ if (WIN32)
+     set (sources ${sources} ${ZLIB_SRC_DIR}/contrib/minizip/iowin32.c)
+ endif ()
+ 
+-add_executable(fmusim ${sources})
++add_library(fmusim_lib STATIC ${sources})
+ 
+-target_include_directories(fmusim PRIVATE
++target_include_directories(fmusim_lib PUBLIC
+   .
+   ../include
+   ${LIBXML2_DIR}/include/libxml2
+@@ -108,6 +106,8 @@ else ()
+     )
+ endif ()
+ 
+-target_link_libraries(fmusim ${libraries})
++add_executable(fmusim fmusim.c fmusim.h)
+ 
+-install(TARGETS fmusim DESTINATION ${CMAKE_INSTALL_PREFIX})
++target_link_libraries(fmusim fmusim_lib ${libraries})
++
++install(TARGETS fmusim fmusim_lib DESTINATION ${CMAKE_INSTALL_PREFIX})

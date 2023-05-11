@@ -1,4 +1,3 @@
-import sys
 from datetime import timedelta
 
 from devs_fmu.simulator import simulator
