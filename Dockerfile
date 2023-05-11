@@ -63,25 +63,38 @@ RUN wget -O miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-${MINICO
 ENV PATH /home/dev/miniconda3/bin:$PATH
 
 ###############################
-# SETUP PYTHON API ENV
-###############################
-
-COPY python-api/envs/test-environment.yml test-environment.yml
-RUN conda env create -f test-environment.yml
-
-###############################
-# SETUP C API ENV
-###############################
-
-COPY c-api/envs/environment.yml c-api-environment.yml
-RUN conda env create -f c-api-environment.yml
-
-###############################
-# COPY PROJECT
+# SETUP PROJECT
 ###############################
 
 RUN mkdir project
 WORKDIR project
+COPY --chown=dev OpenModelica OpenModelica
+COPY --chown=dev get_FMUs.sh get_FMUs.sh
+RUN ./get_FMUs.sh
+
+###############################
+# SETUP PYTHON API
+###############################
+
+COPY --chown=dev python-api/envs/test-environment.yml python-api-test-environment.yml
+RUN conda env create -f python-api-test-environment.yml
+
+###############################
+# SETUP C API
+###############################
+
+COPY --chown=dev c-api/envs/environment.yml c-api-environment.yml
+RUN conda env create -f c-api-environment.yml
+
+WORKDIR c-api
+COPY --chown=dev c-api/fetch.sh fetch.sh
+COPY --chown=dev c-api/patches patches
+RUN ./fetch.sh
+WORKDIR ..
+
+###############################
+# COPY REST OF PROJECT
+###############################
 
 COPY --chown=dev . .
 
@@ -89,16 +102,15 @@ COPY --chown=dev . .
 # TEST PYTHON API
 ###############################
 
-RUN ./get_FMUs.sh
-RUN conda run -n devs-fmu-test pytest python-api
+RUN conda run -n devs-fmu-python-api-test pytest python-api
 
 ###############################
 # TEST C API
 ###############################
 
 WORKDIR c-api
-RUN ./fetch.sh
 RUN mkdir build
 WORKDIR build
 RUN cmake ..
 RUN cmake --build . --target run-c-api
+RUN ./run-c-api

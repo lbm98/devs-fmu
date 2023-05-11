@@ -12,4 +12,3 @@ wget -q https://raw.githubusercontent.com/OpenModelica/OpenModelica/v1.21.0/OMCo
 mv BouncingBall.mo OpenModelica/models
 cd OpenModelica/scripts
 omc bouncingBall.mos
-cd ../..
