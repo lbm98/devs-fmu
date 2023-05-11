@@ -13,4 +13,4 @@ OpenModelica/models/*
 
 Reference-FMUs/*
 
-c-api/lib/Reference-FMUs
+c-api/Reference-FMUs
