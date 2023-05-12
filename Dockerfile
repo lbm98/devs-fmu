@@ -16,6 +16,7 @@ RUN apt-get update && \
         wget \
         gnupg \
         ca-certificates \
+        zlib1g-dev \
         git && \
     apt-get clean
 
@@ -69,28 +70,15 @@ ENV PATH /home/dev/miniconda3/bin:$PATH
 RUN mkdir project
 WORKDIR project
 COPY --chown=dev OpenModelica OpenModelica
-COPY --chown=dev get_FMUs.sh get_FMUs.sh
-RUN ./get_FMUs.sh
+COPY --chown=dev get_FMUs.py get_FMUs.py
+RUN python ./get_FMUs.py
 
 ###############################
-# SETUP PYTHON API
+# SETUP PYTHON API ENV
 ###############################
 
 COPY --chown=dev python-api/envs/test-environment.yml python-api-test-environment.yml
 RUN conda env create -f python-api-test-environment.yml
-
-###############################
-# SETUP C API
-###############################
-
-COPY --chown=dev c-api/envs/environment.yml c-api-environment.yml
-RUN conda env create -f c-api-environment.yml
-
-WORKDIR c-api
-COPY --chown=dev c-api/fetch.sh fetch.sh
-COPY --chown=dev c-api/patches patches
-RUN ./fetch.sh
-WORKDIR ..
 
 ###############################
 # COPY REST OF PROJECT
@@ -112,5 +100,5 @@ WORKDIR c-api
 RUN mkdir build
 WORKDIR build
 RUN cmake ..
-RUN cmake --build . --target run-c-api
-RUN ./run-c-api
+RUN cmake --build . --target run_c_api
+RUN ./run_c_api

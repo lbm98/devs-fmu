@@ -1,6 +1,0 @@
-name: devs-fmu-c-api
-channels:
-  - conda-forge
-  - defaults
-dependencies:
-  - fmpy-base=0.3.15

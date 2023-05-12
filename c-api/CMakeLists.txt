@@ -2,23 +2,31 @@ cmake_minimum_required(VERSION 3.19)
 project(c-api)
 
 set(CMAKE_CXX_STANDARD 17)
-#set(CMAKE_C_STANDARD 11)
+
+include(FetchContent)
+
+###############################
+# Add fmusim_lib
+###############################
 
 set(WITH_FMUSIM ON CACHE BOOL "" FORCE)
 
-add_subdirectory(Reference-FMUs)
-
-set(SOURCES
-        main.cpp
+FetchContent_Declare(
+        fmusim_lib_dep
+        GIT_REPOSITORY https://github.com/modelica/Reference-FMUs
+        GIT_TAG v0.0.23
+        PATCH_COMMAND cmake -E copy "${CMAKE_CURRENT_LIST_DIR}/patches/CMakeLists.txt" "fmusim"
 )
 
-add_executable(run-c-api ${SOURCES})
+FetchContent_MakeAvailable(fmusim_lib_dep)
 
-if(TARGET fmusim_lib)
-    message("fmusim_lib is available")
-else()
-    message("fmusim_lib is not available")
-endif()
+###############################
+# Create target run_c_api
+###############################
 
+set(SOURCES
+        main.cpp)
 
-target_link_libraries(run-c-api fmusim_lib)
+add_executable(run_c_api ${SOURCES})
+
+target_link_libraries(run_c_api fmusim_lib)
