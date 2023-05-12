@@ -1,9 +1,5 @@
 loadFile("../models/BouncingBall.mo");
 
-mkdir(
-    newDirectory="../build"
-);
-
 cd(
     newWorkingDirectory="../build"
 );

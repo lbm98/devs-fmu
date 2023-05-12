@@ -8,3 +8,5 @@ dependencies:
   - numpy
   - matplotlib
   - pytest
+  - pip:
+      - ompython==3.4.0
