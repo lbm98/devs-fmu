@@ -41,4 +41,4 @@ plt.title('Capacitor Discharge')
 plt.grid(True)
 plt.legend()
 
-plt.savefig('capacitor_discharge_plot.svg', format='svg')
+plt.savefig('capacitor-discharge-plot.svg', format='svg')
