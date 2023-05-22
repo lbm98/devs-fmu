@@ -1,4 +1,4 @@
-name: devs-fmu-python-api
+name: devs-fmu
 channels:
   - conda-forge
   - defaults

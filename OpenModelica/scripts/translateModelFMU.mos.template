@@ -1,0 +1,16 @@
+loadFile("{{ model_file }}");
+
+cd(
+    newWorkingDirectory="{{ build_dir }}"
+);
+
+generatedFileName := translateModelFMU(
+      className={{ model_name }},
+      version="2.0",
+      fmuType="cs"
+);
+
+copy(
+    source=generatedFileName,
+    destination="{{ fmu_name }}"
+);

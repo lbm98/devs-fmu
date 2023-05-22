@@ -69,16 +69,18 @@ ENV PATH /home/dev/miniconda3/bin:$PATH
 
 RUN mkdir project
 WORKDIR project
+
+###############################
+# SETUP PYTHON TEST ENV
+###############################
+
+COPY --chown=dev envs/test-environment.yml test-environment.yml
+RUN conda env create -f test-environment.yml
+
 COPY --chown=dev OpenModelica OpenModelica
+COPY --chown=dev config.py config.py
 COPY --chown=dev get_FMUs.py get_FMUs.py
-RUN python ./get_FMUs.py
-
-###############################
-# SETUP PYTHON API ENV
-###############################
-
-COPY --chown=dev python-api/envs/test-environment.yml python-api-test-environment.yml
-RUN conda env create -f python-api-test-environment.yml
+RUN conda run -n devs-fmu-test python get_FMUs.py
 
 ###############################
 # COPY REST OF PROJECT
@@ -90,7 +92,7 @@ COPY --chown=dev . .
 # TEST PYTHON API
 ###############################
 
-RUN conda run -n devs-fmu-python-api-test pytest python-api
+RUN conda run -n devs-fmu-test pytest python-api
 
 ###############################
 # TEST C API

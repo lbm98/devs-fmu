@@ -3,9 +3,9 @@ from datetime import timedelta
 from devs_fmu.simulator import simulator
 from devs_fmu.bouncing_ball import BouncingBall
 
-from config import OPENMODELICA_FMUS_PATH
+from config import OPENMODELICA_FMUS_DIR
 
-FMU_PATH = OPENMODELICA_FMUS_PATH / 'BouncingBall.fmu'
+FMU_PATH = OPENMODELICA_FMUS_DIR / 'BouncingBall.fmu'
 
 
 def test_bouncing_ball():

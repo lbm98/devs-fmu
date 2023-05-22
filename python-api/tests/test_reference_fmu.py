@@ -4,9 +4,9 @@ from datetime import timedelta
 from devs_fmu.simulator import simulator
 from devs_fmu.bouncing_ball import BouncingBall
 
-from config import REFERENCE_FMUS_PATH
+from config import REFERENCE_FMUS_DIR
 
-FMU_PATH = REFERENCE_FMUS_PATH / '2.0/BouncingBall.fmu'
+FMU_PATH = REFERENCE_FMUS_DIR / '2.0/BouncingBall.fmu'
 
 
 def test_bouncing_ball():

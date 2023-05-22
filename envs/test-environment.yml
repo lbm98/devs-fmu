@@ -1,7 +1,11 @@
-name: devs-fmu-python-api-test
+name: devs-fmu-test
 channels:
   - conda-forge
   - defaults
 dependencies:
   - pytest
   - fmpy-base=0.3.15
+  - pip=23.1.2
+  - jinja2
+  - pip:
+      - ompython==3.4.0

@@ -10,6 +10,10 @@
 OpenModelica/build
 OpenModelica/FMUs/*
 OpenModelica/models/*
+OpenModelica/scripts/*
+!OpenModelica/scripts/translateModelFMU.mos.template
+
+paper/*
 
 Reference-FMUs/*
 
