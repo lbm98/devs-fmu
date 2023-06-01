@@ -26,26 +26,27 @@ lars.moons@student.uantwerpen.be}
 \maketitle
 
 \begin{abstract}
-This paper proposes a novel workflow for extending energy models in wireless network simulation using hybrid co-simulation based on the Functional Mock-up Interface (FMI). Currently, adding new energy models to the \ns3 energy framework \ns3 requires a tedious workflow involving creating a circuit diagram, solving the circuit and writing the code, which can be time-consuming and error-prone. To address these challenges, the proposed workflow integrates visual design, drag-and-drop functionality, and predefined model building blocks from tools like OpenModelica and Simscape, which will interact with discrete-event simulators like \ns3 through FMI.
+This paper proposes a novel workflow for extending energy models in wireless network simulation using hybrid co-simulation based on the Functional Mock-up Interface (FMI). Currently, adding new energy models to the \ns3 energy framework requires a tedious workflow involving creating a circuit diagram, solving the circuit and writing the code, which can be time-consuming and error-prone. To address these challenges, the proposed workflow integrates visual design, drag-and-drop functionality, and predefined model building blocks from tools like OpenModelica and Simscape, which will interact with discrete-event simulators like \ns3 through FMI.
 \end{abstract}
 
 \begin{IEEEkeywords}
-energy modeling, \ns3, hybrid co-simulation, FMI, wireless network simulation 
+energy modelling, \ns3, hybrid co-simulation, FMI, wireless network simulation 
 \end{IEEEkeywords}
 
 \section{Introduction}
 
-Energy modeling is a critical aspect of evaluating the performance of wireless network protocols.
-Therefore, in the network simulator \ns3, a generic energy framework is provided, with basic structures for modeling energy sources \cite{wu2012energy}.
+Energy modelling is a critical aspect of evaluating the performance of wireless network protocols.
+Therefore, in the network simulator \ns3, a generic energy framework is provided, with basic structures for modelling energy sources \cite{wu2012energy}.
 While there are some pre-built models available, more advanced energy models require programmers to write their own code.
-In a previous study \cite{capuzzo2021ns}, the authors encountered this situation, when they modeled a battery-less IoT device with energy harvesting using the \ns3 energy model interface.
+In a previous study \cite{capuzzo2021ns}, the authors encountered this situation, when they modelled a battery-less IoT device with energy harvesting using the \ns3 energy model interface.
 Their workflow involved creating a circuit diagram, solving the circuit using analysis techniques, and implementing the resulting formula in code. 
 This approach proves effective for smaller and less complex circuits.
 However, when more realism is necessary, this workflow becomes challenging due to potential errors, time consumption, and unfamiliarity with circuit analysis techniques. Furthermore, integrating energy models developed by different teams using different toolsets can pose difficulties.
 
 To overcome these challenges, we propose a new workflow that incorporates visual design, drag-and-drop functionality, and predefined model building blocks \cite{carreira2020foundations}. Existing tools like OpenModelica and Simscape offer such functionality, but they do not directly integrate with discrete-event simulators like \ns3. Hence, the challenge lies in combining these two environments through hybrid co-simulation.
 The integration can be made possible with the Functional Mock-up Interface (FMI) standard, which enables communication between the two environments.
-Previous work in \cite{cremona2019hybrid}, \cite{cremona2016step}, and \cite{tavella2016toward} has explored FMI-based hybrid co-simulation, but its application to simulating energy models in wireless network simulations appears to be a novel contribution.
+Previous work in \cite{cremona2019hybrid}, \cite{cremona2016step}, and \cite{widl2015fmi} has explored FMI-based hybrid co-simulation. \cite{cremona2019hybrid} and \cite{cremona2016step} primarily discuss general implementation details, while \cite{widl2015fmi} delved into a specific use case.
+This paper discusses another unexplored use case, namely the application to simulating energy models in wireless network simulations, which makes it a novel contribution in this domain.
 
 In the following sections, we will briefly review discrete-event and physical simulation, discuss the FMI standard, and present two proof-of-concept implementations: one based on Python and another based on C++. We will talk about future work and finally conclude the paper.
 
@@ -83,17 +84,17 @@ This returns us to the initial state, and the process repeats.
 Physical simulation employs mathematical equations to model the behaviour of physical objects.
 Unlike the discrete events, it operates in a continuous state space.
 Two popular tools that support physical simulation are OpenModelica and Simscape.
-These tools are available either as open-source software or free for academic research.
+These tools are available as either open-source software or free for academic research.
 They eliminate the need to numerically solve systems of equations that govern the laws of physics.
 Instead, they provide pre-written blocks that can be connected graphically and let the solver do all the tedious work.
-In addition to their graphical interfaces, these tools also support their own modeling language. These languages resemble regular programming languages but operate at a higher level of abstraction.
+In addition to their graphical interfaces, these tools also support their own modelling language. These languages resemble regular programming languages but operate at a higher level of abstraction.
 They are equation-based rather than assignment-based, enabling acausal data flow that does not fix input or output variables.
 This flexibility allows inputs and outputs to be derived depending on the situation.
 
 Let's consider a simple physical system, such as a discharging capacitor, see Fig. \ref{capacitor-discharge}.
 The system consists of two main components: a capacitor and a resistor.
 Using the aforementioned tools, these components can be connected graphically (Fig. \ref{cd:graphical-model}).
-The graphical model is then translated into a textual modeling language (Fig. \ref{cd:modeling-language}), in which the behaviour of a discharging capacitor is described with a differential equation:
+The graphical model is then translated into a textual modelling language (Fig. \ref{cd:modeling-language}), in which the behaviour of a discharging capacitor is described with a differential equation:
 \[
 \frac{dV}{dt} = -\frac{V}{CR}
 \]
@@ -117,7 +118,7 @@ Note that this example serves to provide intuition rather than demonstrate the e
   \begin{subfigure}[b]{\linewidth}
     \centering
     \includegraphics[width=0.9\linewidth]{images/capacitor-discharge-code.drawio.pdf}
-    \caption{Modeling language}
+    \caption{Modelling language}
     \label{cd:modeling-language}
   \end{subfigure}
   
@@ -149,7 +150,7 @@ A Functional Mock-up Unit (FMU) encapsulates a model that exposes the FMI interf
 It is packaged as a ZIP file containing an XML-based model description and a shared library that implements the FMI interface as a C API, as in Fig. \ref{FMU-architecture}.
 Additionally, an FMU may include source code and documentation.
 The shared library could be compiled from a single C source file.
-However, in practice, the functionality is often decomposed into three components: the FMI source, which precisely defines the functions according to the FMI standard; the co-simulation source, which includes a numerical solver used by all CS models; and the model source, which contains code specific to the particular physical system being modeled.
+However, in practice, the functionality is often decomposed into three components: the FMI source, which precisely defines the functions according to the FMI standard; the co-simulation source, which includes a numerical solver used by all CS models; and the model source, which contains code specific to the particular physical system being modelled.
 
 \begin{figure}[htbp]
   \centering
@@ -175,7 +176,7 @@ The discrete-event simulator is implemented as a Python class with the following
 
 \subsection{Physical Simulator}
 
-The physical simulator component is simple, as no implementation is required. We only need to download an existing FMU from either the Reference-FMUs project or one exported from OpenModelica.
+The physical simulator component is straightforward, as no implementation is required. We only need to download an existing FMU from either the Reference-FMUs project or one exported from OpenModelica.
 
 \subsection{Discrete Event Model}
 
@@ -197,8 +198,8 @@ FMPy provides access to the following functions from the FMI interface:
     \item \texttt{fmi2Terminate}, \texttt{fmi2FreeInstance}: Cleans up the model by freeing memory 
     
 \end{itemize}
-For a sequence diagram, refer to Fig. \ref{fmi-sequence}.
-For an overview of the architecture, refer to Fig. \ref{images/python-implementation-architecture}.
+For a sequence diagram, refer to Fig. \ref{fmi-sequence} and
+for an overview of the architecture, refer to Fig. \ref{python-implementation-architecture}.
 
 \begin{figure}[htbp]
   \centering
@@ -209,7 +210,7 @@ For an overview of the architecture, refer to Fig. \ref{images/python-implementa
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\linewidth]{python-implementation-architecture.drawio.pdf}
+  \includegraphics[width=\linewidth]{images/python-implementation-architecture.drawio.pdf}
   \caption{Python implementation architecture.}
   \label{python-implementation-architecture}
 \end{figure}
@@ -241,60 +242,37 @@ v := 0
 \end{aligned}
 \]
 where $e$ is the coefficient of restitution.
-The Github repository provides notebooks that visualise the behaviour of the bouncing ball by plotting its height over time, also shown in Fig. \ref{bb:reference-fmu-default}.
-During the simulation, no discrete-events occurred, but the next experiment adds an event that resets the height and velocity to their initial values, see Fig. \ref{bb:reference-fmu-with-event}.
-
-We repeat the experiment using an FMU generated by OpenModelica for the same bouncing ball model, and the resulting behaviour is similar, as shown in Fig. \ref{bb:openmodelica-fmu-default} and Fig. \ref{bb:openmodelica-fmu-with-event}.
+The Github repository provides notebooks that visualise the behaviour of the bouncing ball by plotting its height over time, also shown in Fig. \ref{fmu-comparsion-no-event}.
+During the simulation, no discrete-events occurred, but the next experiment adds an event that resets the height and velocity to their initial values, see Fig. \ref{fmu-comparsion-with-event}.
+In both figures, we compare the Reference FMU with an FMU generated by OpenModelica, for the same bouncing ball model, and the resulting behaviour is shown to be similar.
 
 \begin{figure}[htbp]
   \centering
   \begin{subfigure}[b]{\linewidth}
     \centering
-    \includegraphics[width=0.5\linewidth]{images/reference-fmu-default.png}
+    \includegraphics[width=0.5\linewidth]{images/fmu-comparsion-no-event.png}
     \caption{Default simulation}
-    \label{bb:reference-fmu-default}
+    \label{fmu-comparsion-no-event}
   \end{subfigure}
   
   \vspace{1em}
   
   \begin{subfigure}[b]{\linewidth}
     \centering
-    \includegraphics[width=0.5\linewidth]{images/reference-fmu-with-event.png}
+    \includegraphics[width=0.5\linewidth]{images/fmu-comparsion-with-event.png}
     \caption{Simulation with reset event}
-    \label{bb:reference-fmu-with-event}
+    \label{fmu-comparsion-with-event}
   \end{subfigure}
   
-  \caption{Bouncing ball simulated with Reference FMU model.}
-  \label{capacitor-discharge}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}[b]{\linewidth}
-    \centering
-    \includegraphics[width=0.5\linewidth]{images/openmodelica-fmu-default.png}
-    \caption{Default simulation}
-    \label{bb:openmodelica-fmu-default}
-  \end{subfigure}
-  
-  \vspace{1em}
-  
-  \begin{subfigure}[b]{\linewidth}
-    \centering
-    \includegraphics[width=0.5\linewidth]{images/openmodelica-fmu-with-event.png}
-    \caption{Simulation with reset event}
-    \label{bb:openmodelica-fmu-with-event}
-  \end{subfigure}
-  
-  \caption{Bouncing ball simulated with OpenModelica model.}
-  \label{capacitor-discharge}
+  \caption{Bouncing ball simulated with Reference FMU and OpenModelica FMU.}
+  \label{comparsion-ref-om}
 \end{figure}
 
 \subsection{Implementation in C++}
 
 The target discrete-event frameworks \ns3 and OMNeT++ are written in C++.
 Integrating  a Python runtime into the simulation would add significant overhead.
-Therefore, work has begun on the C++ implementation, but it is still in the early stages. This brings us to future work.
+Therefore, progress has been made on the C++ implementation, but it is still in the early stages. This brings us to future work.
 
 \section{Future Work}
 
@@ -302,7 +280,7 @@ In future work, we plan to test additional models using both the Python and C++ 
 Our overarching goal is to create a comprehensive library of energy models saved as OpenModelica or Simscape graphical models, that will seamlessly integrate with \ns3, enriching its energy model framework in a user-friendly, maintainable, and flexible way.
 
 \section{Conclusion}
-In conclusion, this paper proposes a workflow that combines discrete-event simulation with physical simulation using the Functional Mock-up Interface (FMI). By integrating visual design and drag-and-drop functionality from tools like OpenModelica and Simscape with discrete-event simulators like ns-3, advanced energy models can be created more effectively. The implementation in Python demonstrates the feasibility of the approach, and work is underway to develop a C++ implementation for integration with ns-3. This workflow has the potential to enhance energy modeling in wireless network simulations and could ultimately lead to a comprehensive library of user-friendly, maintainable, and flexible energy models.
+In conclusion, this paper proposes a workflow that combines discrete-event simulation with physical simulation using the Functional Mock-up Interface (FMI). By integrating visual design and drag-and-drop functionality from tools like OpenModelica and Simscape with discrete-event simulators like ns-3, advanced energy models can be created more effectively. The implementation in Python demonstrates the feasibility of the approach, and work is underway to develop a C++ implementation for integration with ns-3. This workflow has the potential to enhance energy modelling in wireless network simulations and could ultimately lead to a comprehensive library of user-friendly, maintainable, and flexible energy models.
 
 \printbibliography
 
