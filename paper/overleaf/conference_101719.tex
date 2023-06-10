@@ -4,6 +4,7 @@
 \usepackage{algorithmic}
 \usepackage{subcaption}
 \usepackage{graphicx}
+\usepackage{hyperref}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{svg}
@@ -48,9 +49,14 @@ The integration can be made possible with the Functional Mock-up Interface (FMI)
 Previous work in \cite{cremona2019hybrid}, \cite{cremona2016step}, and \cite{widl2015fmi} has explored FMI-based hybrid co-simulation. \cite{cremona2019hybrid} and \cite{cremona2016step} primarily discuss general implementation details, while \cite{widl2015fmi} delved into a specific use case.
 This paper discusses another unexplored use case, namely the application to simulating energy models in wireless network simulations, which makes it a novel contribution in this domain.
 
-In the following sections, we will briefly review discrete-event and physical simulation, discuss the FMI standard, and present two proof-of-concept implementations: one based on Python and another based on C++. We will talk about future work and finally conclude the paper.
+In the following sections, we will briefly review discrete-event and physical simulation, discuss the FMI standard, and present the architectural design.
+Then, we will demonstrate two proof-of-concept implementations: one based on Python and another based on C++.
+Finally, we will talk about future work and conclude the paper.
 
-\section{Discrete-Event Simulation}
+\section{Background}
+\label{section:background}
+
+\subsection{Discrete-Event Simulation}
 
 In a discrete-event, simulation events occur at specific points in time.
 Each event marks a change of state in the system, and states can only change when events take place. 
@@ -79,7 +85,7 @@ As a result, the traffic light transitions to the \texttt{RED} state, and the \t
 After that, the simulation time is advanced to 120 seconds, and the \texttt{show\_green} event is executed.
 This returns us to the initial state, and the process repeats.
 
-\section{Physical Simulation}
+\subsection{Physical Simulation}
 
 Physical simulation employs mathematical equations to model the behaviour of physical objects.
 Unlike the discrete events, it operates in a continuous state space.
@@ -135,7 +141,7 @@ Note that this example serves to provide intuition rather than demonstrate the e
   \label{capacitor-discharge}
 \end{figure}
 
-\section{FMI standard}
+\subsection{FMI standard}
 
 The Functional Mock-up Interface (FMI) is the de facto standard for co-simulation and model-exchange.
 It will enable the integration between discrete-event and physical simulation from the previous sections.
@@ -159,12 +165,26 @@ However, in practice, the functionality is often decomposed into three component
   \label{FMU-architecture}
 \end{figure}
 
+\section{Architectural Design}
+
+We can combine the three components discussed in the \nameref{section:background} section into a cohesive architecture, as illustrated in Figure \ref{architectural-design}. This architecture combines Discrete-Event Simulation, Physical Simulation, and the FMI standard.
+
+To summarise, discrete-event frameworks such as \ns3 and OMNeT++ run simulators that continuously loop and trigger events. Within these events, models written in these frameworks are called for their specific functionality. These models have energy components, which are controlled through the FMI interface. On the other end of the interface, we find the energy models originally exported from tools like OpenModelica and Simscape, completing the architecture.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\linewidth]{images/architectural-design.drawio.pdf}
+  \caption{Architectural Design Diagram.}
+  \label{architectural-design}
+\end{figure}
+
 \section{Implementation}
 
-In this section, we will discuss the implementations, which are available on Github \footnote{https://github.com/lbm98/devs-fmu}.
-We will start by implementing it in Python, which is an ideal language for a proof-of-concept due to its simplicity, which allows us to focus on the core concepts rather than low-level details like memory management and build processes.
+This section presents two proof-of-concept implementations that can be found on Github \footnote{https://github.com/lbm98/devs-fmu}. The first implementation will be in Python, chosen for its simplicity and wide range of available libraries.
+Note that this PoC attempts to validate the architecture proposed in the previous section,
+and will therefore not include energy components or wireless network nodes.
 
-\subsection{Discrete-Event Simulator}
+\subsection{Discrete-Event Simulator PoC}
 
 The discrete-event simulator is implemented as a Python class with the following methods:
 \begin{itemize}
@@ -174,11 +194,11 @@ The discrete-event simulator is implemented as a Python class with the following
     \item \texttt{reset}: Clears the event queue and resets the simulation time to 0 seconds.
 \end{itemize}
 
-\subsection{Physical Simulator}
+\subsection{Physical Simulator PoC}
 
 The physical simulator component is straightforward, as no implementation is required. We only need to download an existing FMU from either the Reference-FMUs project or one exported from OpenModelica.
 
-\subsection{Discrete Event Model}
+\subsection{Discrete Event Model PoC}
 
 The discrete-event model is conceptually part of the discrete-event system,
 but connects with the physical system through the FMI interface.
@@ -280,7 +300,7 @@ In future work, we plan to test additional models using both the Python and C++ 
 Our overarching goal is to create a comprehensive library of energy models saved as OpenModelica or Simscape graphical models, that will seamlessly integrate with \ns3, enriching its energy model framework in a user-friendly, maintainable, and flexible way.
 
 \section{Conclusion}
-In conclusion, this paper proposes a workflow that combines discrete-event simulation with physical simulation using the Functional Mock-up Interface (FMI). By integrating visual design and drag-and-drop functionality from tools like OpenModelica and Simscape with discrete-event simulators like ns-3, advanced energy models can be created more effectively. The implementation in Python demonstrates the feasibility of the approach, and work is underway to develop a C++ implementation for integration with ns-3. This workflow has the potential to enhance energy modelling in wireless network simulations and could ultimately lead to a comprehensive library of user-friendly, maintainable, and flexible energy models.
+In conclusion, this paper proposes a workflow that combines discrete-event simulation with physical simulation using the Functional Mock-up Interface (FMI). By integrating visual design and drag-and-drop functionality from tools like OpenModelica and Simscape with discrete-event simulators like ns-3, advanced energy models can be created more effectively. The PoC implementation in Python demonstrates the feasibility of the approach, and work is underway to develop a C++ implementation for integration with ns-3. This workflow has the potential to enhance energy modelling in wireless network simulations and could ultimately lead to a comprehensive library of user-friendly, maintainable, and flexible energy models.
 
 \printbibliography
 
